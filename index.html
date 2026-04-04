@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<h2>OI Live Dashboard</h2>
+<canvas id="chart"></canvas>
+
+<script>
+async function loadData() {
+    const res = await fetch('data.json?cache=' + new Date().getTime());
+    const data = await res.json();
+
+    const labels = data.map(d => d.time);
+    const call = data.map(d => d.call_oi);
+    const put = data.map(d => d.put_oi);
+
+    const ctx = document.getElementById('chart').getContext('2d');
+
+    if (window.chart) window.chart.destroy();
+
+    window.chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                { label: 'Call OI', data: call, borderColor: 'red' },
+                { label: 'Put OI', data: put, borderColor: 'green' }
+            ]
+        }
+    });
+}
+
+// refresh every 10 sec
+setInterval(loadData, 10000);
+loadData();
+</script>
+
+</body>
+</html>
